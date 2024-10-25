@@ -1,0 +1,148 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Define a structure for a book
+struct Book {
+    string title;
+    string author;
+    Book* next;
+};
+
+// Define a class for the library management system
+class LibraryManager {
+private:
+    Book* head;
+
+public:
+    LibraryManager() : head(nullptr) {}
+
+    // Function to add a book
+    void addBook(const string& title, const string& author) {
+        Book* newBook = new Book{title, author, nullptr};
+        if (!head) {
+            head = newBook;
+        } else {
+            Book* temp = head;
+            while (temp->next) {
+                temp = temp->next;
+            }
+            temp->next = newBook;
+        }
+        cout << "Book added: " << title << endl;
+    }
+
+    // Function to display all books
+    void displayBooks() {
+        if (!head) {
+            cout << "No books available." << endl;
+            return;
+        }
+        Book* temp = head;
+        while (temp) {
+            cout << "Title: " << temp->title << ", Author: " << temp->author << endl;
+            temp = temp->next;
+        }
+    }
+
+    // Function to search for a book
+    void searchBook(const string& title) {
+        Book* temp = head;
+        while (temp) {
+            if (temp->title == title) {
+                cout << "Book found: " << title << ", Author: " << temp->author << endl;
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "Book not found: " << title << endl;
+    }
+
+    // Function to delete a book
+    void deleteBook(const string& title) {
+        if (!head) {
+            cout << "No books available to delete." << endl;
+            return;
+        }
+
+        if (head->title == title) {
+            Book* toDelete = head;
+            head = head->next;
+            delete toDelete;
+            cout << "Book deleted: " << title << endl;
+            return;
+        }
+
+        Book* temp = head;
+        while (temp->next && temp->next->title != title) {
+            temp = temp->next;
+        }
+
+        if (temp->next) {
+            Book* toDelete = temp->next;
+            temp->next = temp->next->next;
+            delete toDelete;
+            cout << "Book deleted: " << title << endl;
+        } else {
+            cout << "Book not found: " << title << endl;
+        }
+    }
+
+    ~LibraryManager() {
+        while (head) {
+            Book* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+};
+
+// Main function
+int main() {
+    LibraryManager lm;
+    int choice;
+    string title, author;
+
+    do {
+        cout << "\nLibrary Management System\n";
+        cout << "1. Add Book\n";
+        cout << "2. Display Books\n";
+        cout << "3. Search Book\n";
+        cout << "4. Delete Book\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore(); // Ignore newline character after integer input
+
+        switch (choice) {
+            case 1:
+                cout << "Enter book title: ";
+                getline(cin, title);
+                cout << "Enter author: ";
+                getline(cin, author);
+                lm.addBook(title, author);
+                break;
+            case 2:
+                lm.displayBooks();
+                break;
+            case 3:
+                cout << "Enter book title to search: ";
+                getline(cin, title);
+                lm.searchBook(title);
+                break;
+            case 4:
+                cout << "Enter book title to delete: ";
+                getline(cin, title);
+                lm.deleteBook(title);
+                break;
+            case 5:
+                cout << "Exiting program." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 5);
+
+    return 0;
+}
